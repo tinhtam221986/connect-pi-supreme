@@ -6,8 +6,7 @@ export async function POST(req: Request) {
     if (!accessToken) return NextResponse.json({ error: 'Missing Token' }, { status: 400 });
 
     if (!process.env.PI_API_KEY) {
-      // If no API key, bypass verification for testing (Development only)
-      console.warn('No PI_API_KEY, mocking success');
+      console.warn('Dev Mode: Mocking success');
       return NextResponse.json({ user: { uid: 'mock_uid', username: 'MockUser' } });
     }
 
