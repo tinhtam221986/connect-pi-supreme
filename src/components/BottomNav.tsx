@@ -9,23 +9,21 @@ interface BottomNavProps {
   initialTab?: string;
 }
 
-export function BottomNav({ onTabChange, initialTab = 'home' }: BottomNavProps) {
+export default function BottomNav({ onTabChange, initialTab = 'home' }: BottomNavProps) {
   const router = useRouter();
   const [activeTab, setActiveTab] = useState(initialTab);
 
   const handleNavigation = (item: { id: string, path: string }) => {
     setActiveTab(item.id);
     if (item.path.startsWith('/')) {
-        // For full page navigations, we let Next.js router handle it
         router.push(item.path);
     } else {
-        // For internal view switching, we use the callback
         onTabChange(item.id);
     }
   };
 
   const navItems = [
-    { id: 'market', icon: ShoppingBag, label: 'Supermarket', path: '/market' },
+    { id: 'market', icon: ShoppingBag, label: 'Market', path: '/market' },
     { id: 'home', icon: Home, label: 'Home', path: '/' },
     { id: 'inbox', icon: Mail, label: 'Inbox', path: '/inbox' },
   ];
@@ -41,17 +39,11 @@ export function BottomNav({ onTabChange, initialTab = 'home' }: BottomNavProps) 
                         key={item.id}
                         onClick={() => handleNavigation(item)}
                         className={cn(
-                          "flex flex-col items-center justify-center gap-1 transition-colors group",
+                          "flex flex-col items-center justify-center gap-1 transition-colors",
                           isActive ? "text-white" : "text-white/60 hover:text-white"
                         )}
-                        aria-label={item.label}
                     >
-                        <div className="relative">
-                            <Icon size={30} strokeWidth={isActive ? 2 : 1.5} />
-                            {item.id === 'inbox' && (
-                                <div className="absolute -top-1 -right-1.5 w-3 h-3 bg-red-500 rounded-full border-2 border-black" />
-                            )}
-                        </div>
+                        <Icon size={30} strokeWidth={isActive ? 2 : 1.5} />
                     </button>
                 );
             })}
@@ -59,5 +51,3 @@ export function BottomNav({ onTabChange, initialTab = 'home' }: BottomNavProps) 
     </div>
   );
 }
-
-export default BottomNav;
