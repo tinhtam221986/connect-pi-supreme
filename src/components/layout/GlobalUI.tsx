@@ -54,4 +54,4 @@ export default function GlobalUI({ children }: { children: React.ReactNode }) {
       </div>
     </div>
   );
-              }
+}
