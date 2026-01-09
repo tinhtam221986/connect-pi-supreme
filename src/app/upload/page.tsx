@@ -1,11 +1,12 @@
-"use client";
-import React, { Suspense } from "react";
-import { CreateFlow } from "@/components/create/CreateFlow";
+'use client';
+
+import React from 'react';
+import CreateFlow from '@/components/create/CreateFlow'; // Đã sửa: Không dùng dấu ngoặc nhọn
 
 export default function UploadPage() {
-    return (
-        <Suspense fallback={<div className="min-h-screen bg-black text-white flex items-center justify-center">Loading Studio...</div>}>
-            <CreateFlow />
-        </Suspense>
-    )
+  return (
+    <main className="h-screen bg-black">
+      <CreateFlow />
+    </main>
+  );
 }
