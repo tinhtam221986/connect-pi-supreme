@@ -1,35 +1,30 @@
 "use client";
+import React, { createContext, useContext, useState } from 'react';
 
-import React, { createContext, useState, useContext, ReactNode } from 'react';
-
-// Interface matches the spec and usage in VideoOverlay
 interface NavContextType {
   isNavVisible: boolean;
   toggleNav: () => void;
+  activeTab: string;
+  setActiveTab: (tab: string) => void;
 }
 
-// Export the context directly to be used by consumers
-export const NavContext = createContext<NavContextType | undefined>(undefined);
+const NavContext = createContext<NavContextType | undefined>(undefined);
 
-export const NavProvider = ({ children }: { children: ReactNode }) => {
-  // Renamed state to match the interface and spec
+export function NavProvider({ children }: { children: React.ReactNode }) {
   const [isNavVisible, setIsNavVisible] = useState(true);
+  const [activeTab, setActiveTab] = useState('home');
 
-  const toggleNav = () => {
-    setIsNavVisible(prev => !prev);
-  };
+  const toggleNav = () => setIsNavVisible(!isNavVisible);
 
   return (
-    <NavContext.Provider value={{ isNavVisible, toggleNav }}>
+    <NavContext.Provider value={{ isNavVisible, toggleNav, activeTab, setActiveTab }}>
       {children}
     </NavContext.Provider>
   );
-};
+}
 
 export const useNav = () => {
   const context = useContext(NavContext);
-  if (context === undefined) {
-    throw new Error('useNav must be used within a NavProvider');
-  }
+  if (!context) throw new Error("useNav must be used within NavProvider");
   return context;
 };
