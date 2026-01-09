@@ -1,18 +1,16 @@
 "use client";
-
-import React from 'react';
-import HorizontalBottomNav from '@/components/feed/HorizontalBottomNav';
-import { FloatingAIBot } from '@/components/ai/FloatingAIBot';
-import { NavProvider } from '@/contexts/NavContext';
+import React, { useState } from 'react';
+import BottomNav from './BottomNav';
 
 export default function AppShell({ children }: { children: React.ReactNode }) {
-    return (
-        <NavProvider>
-            <div className="w-full h-[100dvh] bg-black relative overflow-hidden">
-                <main className="w-full h-full">{children}</main>
-                <HorizontalBottomNav />
-                <FloatingAIBot />
-            </div>
-        </NavProvider>
-    );
+  const [activeTab, setActiveTab] = useState('home');
+
+  return (
+    <div className="flex flex-col min-h-screen bg-black text-white">
+      <main className="flex-grow pb-24">
+        {children}
+      </main>
+      <BottomNav onTabChange={(tab) => setActiveTab(tab)} initialTab={activeTab} />
+    </div>
+  );
 }
