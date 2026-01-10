@@ -30,40 +30,42 @@ const VideoOverlay = ({ uploader = { username: '@Pioneer', avatar: '' }, caption
       
       <Node x={27.5} y={24}>
         <button className="active:scale-90 transition-transform">
-          <Heart size={24} fill="white" style={iconStyle} />
+          {/* NÚT TIM RỖNG RUỘT THEO YÊU CẦU */}
+          <Heart size={24} style={iconStyle} strokeWidth={2} />
         </button>
         <span className="text-[9px] font-bold mt-1">{stats.likes}</span>
       </Node>
 
       <Node x={27.5} y={19}>
         <button className="active:scale-90">
-          <MessageCircle size={24} style={iconStyle} />
+          <MessageCircle size={24} style={iconStyle} strokeWidth={2} />
         </button>
         <span className="text-[9px] font-bold mt-1">{stats.comments}</span>
       </Node>
 
-      <Node x={27.5} y={14}><Share2 size={24} style={iconStyle} /></Node>
-      <Node x={27.5} y={9}><Bookmark size={24} style={iconStyle} /></Node>
+      <Node x={27.5} y={14}><Share2 size={24} style={iconStyle} strokeWidth={2} /></Node>
+      <Node x={27.5} y={9}><Bookmark size={24} style={iconStyle} strokeWidth={2} /></Node>
 
-      {/* 2. #14 SHOP KHÁCH (x=2.5, y=7.5) - MẠCH MÁU CHUYÊN SÂU */}
-      <Node x={2.5} y={7.5} className="items-start">
-        <Link href={`/shop/${uploader.username}`} className="flex flex-col items-center p-1.5 bg-black/40 rounded-lg border-2 border-yellow-500 shadow-lg active:scale-95 transition-all">
-          <Store size={20} className="text-yellow-400" />
-          <span className="text-[8px] font-black text-yellow-400">SHOP</span>
+      {/* 2. #14 SHOP KHÁCH (THU NHỎ 1/2) - x=1.5 (Dịch sát lề hơn) */}
+      <Node x={1.5} y={7.5} className="items-start">
+        <Link href={`/shop/${uploader.username}`} className="flex flex-col items-center p-1 bg-black/40 rounded border border-yellow-500/50 active:scale-95 transition-all">
+          <Store size={14} className="text-yellow-400" />
+          <span className="text-[6px] font-black text-yellow-400">SHOP</span>
         </Link>
       </Node>
 
-      {/* 3. #13 AVATAR & #12 CAPTION (Hạ xuống y=3.5 chuẩn thiết kế) */}
-      <div className="absolute pointer-events-auto z-40 px-4 flex flex-col gap-2" 
-           style={{ ...getPos(0, 3.5), width: '75%', left: '4%' }}>
+      {/* 3. #13 AVATAR & #12 CAPTION (DỊCH SÁT LỀ TRÁI 1/3) */}
+      {/* Thay đổi left từ 4% xuống còn 1.5% để sát mép màn hình */}
+      <div className="absolute pointer-events-auto z-40 flex flex-col gap-1.5" 
+           style={{ ...getPos(0, 3.5), width: '80%', left: '1.5%' }}>
         <div className="flex items-center gap-2">
-           <div className="w-9 h-9 rounded-full border-2 border-white/90 overflow-hidden shadow-xl">
+           <div className="w-8 h-8 rounded-full border border-white/70 overflow-hidden shadow-lg">
               <img src={uploader.avatar || `https://api.dicebear.com/7.x/avataaars/svg?seed=${uploader.username}`} alt="avt" className="w-full h-full object-cover" />
            </div>
-           <p className="font-bold text-[14px] drop-shadow-lg text-white">@{uploader.username}</p>
+           <p className="font-bold text-[13px] drop-shadow-lg text-white">@{uploader.username}</p>
         </div>
-        <p className="text-[11px] leading-tight drop-shadow-md font-medium line-clamp-2 bg-black/5 rounded-sm p-0.5">
-          {caption || "Connect Supreme - Mạng xã hội của Pioneer"}
+        <p className="text-[10px] leading-tight drop-shadow-md font-medium line-clamp-2 bg-black/10 rounded-sm p-0.5">
+          {caption || "Connect Supreme - Pioneer Social Network"}
         </p>
       </div>
 
@@ -80,21 +82,20 @@ const VideoOverlay = ({ uploader = { username: '@Pioneer', avatar: '' }, caption
         )}
       </AnimatePresence>
 
-      {/* #5 MASTER V - KHÓA CHẾT TỌA ĐỘ (x=27.5, y=1.2) */}
+      {/* #5 MASTER V (x=27.5, y=1.2) */}
       <div className="absolute pointer-events-auto cursor-pointer p-2 z-[70]"
         style={{ ...getPos(27.5, 1.2), transform: 'translate(-50%, 0%)' }}
         onClick={(e) => { e.stopPropagation(); toggleNav(); }}
       >
-        <ChevronDown size={30} className={`transition-transform duration-300 ${isNavVisible ? '' : 'rotate-180'}`} style={iconStyle} />
+        <ChevronDown size={28} className={`transition-transform duration-300 ${isNavVisible ? '' : 'rotate-180'}`} style={iconStyle} />
       </div>
 
       {/* #11 & #16 CỤM TIỆN ÍCH TRÁI (y=1.2) */}
-      <Node x={2.2} y={1.2}><Disc size={18} className="animate-spin-slow text-white/70" /></Node>
-      <Node x={4.2} y={1.2}><Volume2 size={16} className="text-white/70" /></Node>
+      <Node x={1.8} y={1.2}><Disc size={16} className="animate-spin-slow text-white/60" /></Node>
+      <Node x={3.5} y={1.2}><Volume2 size={14} className="text-white/60" /></Node>
 
     </div>
   );
 };
 
 export default VideoOverlay;
-        
