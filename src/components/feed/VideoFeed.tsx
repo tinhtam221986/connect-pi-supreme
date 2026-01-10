@@ -1,62 +1,90 @@
-"use client";
-import React from 'react';
-import { Heart, MessageCircle, Share2, ShoppingCart, Bookmark, MoreVertical } from 'lucide-react';
+'use client';
+import React, { useRef, useEffect, useState, useCallback } from 'react';
+import { apiClient } from '@/lib/api-client';
+import VideoPlayer from './VideoPlayer';
+import VideoOverlay from './VideoOverlay'; 
 
-export const VideoFeed = ({ onNavigate }: { onNavigate: (tab: string) => void }) => {
+interface Uploader {
+  _id: string;
+  username: string;
+  avatar: string;
+}
+
+interface Video {
+  _id: string;
+  video_url: string;
+  caption: string;
+  uploader: Uploader;
+  stats: any; // Add stats to the interface
+}
+
+const VideoFeed: React.FC = () => {
+  const [videos, setVideos] = useState<Video[]>([]);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [activeIndex, setActiveIndex] = useState(0);
+  const feedRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const fetchVideos = async () => {
+      try {
+        const response = await apiClient.feed.get();
+        if (response.error) {
+          console.warn("API returned a fallback scenario:", response.error.message);
+          setErrorMessage(response.error.message);
+          setVideos(response.fallbackData || []);
+        } else {
+          setVideos(response);
+        }
+      } catch (error) {
+        console.error("Failed to fetch videos:", error);
+        setErrorMessage("Could not connect to the server. Please check your network.");
+      }
+    };
+    fetchVideos();
+  }, []);
+
+  const handleScroll = useCallback(() => {
+    const feed = feedRef.current;
+    if (feed) {
+      const { scrollTop, clientHeight } = feed;
+      const newIndex = Math.round(scrollTop / clientHeight);
+      if (newIndex !== activeIndex) {
+        setActiveIndex(newIndex);
+      }
+    }
+  }, [activeIndex]);
+
+  // If there are no videos and no error message, show a loading state.
+  if (videos.length === 0 && !errorMessage) {
+    return (
+      <div className="flex items-center justify-center h-[100dvh] text-white bg-black font-bold">
+        <div className="animate-pulse">Loading Feed...</div>
+      </div>
+    );
+  }
+
   return (
-    <div className="h-full w-full bg-black relative flex flex-col justify-end pb-28">
-      {/* 1. KHU VỰC NỘI DUNG VIDEO (GIỮ CHỖ CHO DATA CỦA JULES) */}
-      <div className="absolute inset-0 z-0 flex items-center justify-center">
-         {/* Sau này Jules sẽ thay bằng thẻ <video> thực tế */}
-         <div className="animate-pulse text-gray-800 text-6xl">Connect Pi</div>
-      </div>
-
-      {/* 2. CỤM NÚT TƯƠNG TÁC BÊN PHẢI (17 NÚT VÀ CHỨC NĂNG) */}
-      <div className="absolute right-3 bottom-32 flex flex-col items-center gap-5 z-30">
-        {/* Nút Số 14: Cửa hàng cá nhân của Profile khách */}
-        <div className="group flex flex-col items-center">
-          <button 
-            onClick={() => onNavigate('market')} 
-            className="w-14 h-14 bg-gradient-to-tr from-yellow-400 to-orange-600 rounded-full border-2 border-white shadow-lg flex items-center justify-center active:scale-90 transition-all"
-          >
-            <ShoppingCart size={28} className="text-white" />
-          </button>
-          <span className="text-[11px] mt-1 text-yellow-500 font-bold shadow-black">SHOP</span>
+    <div className="relative w-full h-[100dvh] bg-black overflow-hidden">
+      {errorMessage && (
+        <div className="absolute top-0 left-0 right-0 z-[60] bg-red-800/90 text-white text-xs text-center p-2 backdrop-blur-sm">
+          {errorMessage}
         </div>
+      )}
 
-        {/* Cụm nút tương tác mạng xã hội */}
-        <div className="flex flex-col items-center gap-4 text-white">
-          <div className="flex flex-col items-center">
-            <Heart size={35} fill="red" className="drop-shadow-md" />
-            <span className="text-xs font-semibold">1.2M</span>
+      <div
+        ref={feedRef}
+        onScroll={handleScroll}
+        className="h-full w-full overflow-y-scroll snap-y snap-mandatory"
+      >
+        {videos.map((v, index) => (
+          <div key={v._id} className="h-[100dvh] w-full snap-start relative">
+            <VideoPlayer src={v.video_url} isActive={index === activeIndex} />
+            <VideoOverlay uploader={v.uploader} caption={v.caption} stats={v.stats} />
           </div>
-          <div className="flex flex-col items-center">
-            <MessageCircle size={35} className="drop-shadow-md" />
-            <span className="text-xs font-semibold">85K</span>
-          </div>
-          <div className="flex flex-col items-center">
-            <Bookmark size={35} className="drop-shadow-md" />
-            <span className="text-xs font-semibold">Saved</span>
-          </div>
-          <div className="flex flex-col items-center">
-            <Share2 size={35} className="drop-shadow-md" />
-            <span className="text-xs font-semibold">Share</span>
-          </div>
-          <MoreVertical size={30} className="mt-2 opacity-70" />
-        </div>
-      </div>
-
-      {/* 3. THÔNG TIN MÔ TẢ (GÓC TRÁI DƯỚI) */}
-      <div className="px-4 mb-4 z-20 max-w-[80%]">
-        <h3 className="font-bold text-lg text-white mb-1 drop-shadow-lg">@Connect_User</h3>
-        <p className="text-sm text-white/90 line-clamp-2 drop-shadow-md">
-          Chào mừng ngài đến với Connect Pi Supreme! Hệ thống đang khởi tạo trải nghiệm Web3 đỉnh cao... 🚀🚨
-        </p>
-        <div className="flex items-center mt-2 gap-2">
-          <div className="w-4 h-4 bg-purple-500 rounded-full animate-spin" />
-          <span className="text-xs text-purple-300 font-medium">Original Audio - Connect Pi</span>
-        </div>
+        ))}
       </div>
     </div>
   );
 };
+
+export default VideoFeed;
