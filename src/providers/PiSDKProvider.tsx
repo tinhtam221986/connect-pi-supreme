@@ -1,25 +1,55 @@
 'use client';
-import React, { createContext, useContext } from 'react';
 
-// Giá trị giả định an toàn để Vercel không báo lỗi khi Prerendering
-const safeDefaultValue = {
-  user: { username: 'Supreme_User', uid: 'pi-default-id' },
-  authenticated: true,
-  accessToken: 'mock-token'
-};
+import React, { createContext, useContext, useEffect, useState } from 'react';
 
-const PiContext = createContext<any>(safeDefaultValue);
+interface PiContextType {
+  user: any;
+  authenticated: boolean;
+  loading: boolean;
+}
 
-export const PiSDKProvider = ({ children }: { children: React.ReactNode }) => {
+const PiContext = createContext<PiContextType | undefined>(undefined);
+
+export function PiSDKProvider({ children }: { children: React.ReactNode }) {
+  const [user, setUser] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    // Chỉ chạy SDK khi ở phía client
+    const initPi = async () => {
+      try {
+        if (typeof window !== 'undefined' && (window as any).Pi) {
+          const Pi = (window as any).Pi;
+          Pi.init({ version: "1.5", sandbox: true });
+          
+          const auth = await Pi.authenticate(['username', 'payments'], (payment: any) => {
+            console.log("Payment in progress", payment);
+          });
+          
+          setUser(auth.user);
+        }
+      } catch (error) {
+        console.error("Pi SDK Init Error:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    initPi();
+  }, []);
+
   return (
-    <PiContext.Provider value={safeDefaultValue}>
+    <PiContext.Provider value={{ user, authenticated: !!user, loading }}>
       {children}
     </PiContext.Provider>
   );
-};
+}
 
 export const usePi = () => {
   const context = useContext(PiContext);
-  // Tuyệt đối không throw Error ở đây để tránh làm sập quá trình Build tĩnh
-  return context || safeDefaultValue;
+  // Thay vì ném lỗi (throw error), chúng ta trả về giá trị mặc định nếu context chưa sẵn sàng
+  if (context === undefined) {
+    return { user: null, authenticated: false, loading: true };
+  }
+  return context;
 };
