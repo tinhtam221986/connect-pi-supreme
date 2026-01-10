@@ -1,31 +1,29 @@
-"use client";
+'use client';
 
-import { useEffect } from "react";
-import { usePi } from "@/components/pi/pi-provider";
-import { useRouter } from "next/navigation";
+import React from 'react';
+import { usePi } from '@/providers/PiSDKProvider';
 
-export default function ProfileRedirectPage() {
-  const { user, isInitialized } = usePi();
-  const router = useRouter();
+export default function ProfilePage() {
+  const { user, loading } = usePi();
 
-  useEffect(() => {
-    // Wait for the SDK to initialize and check for a user
-    if (isInitialized) {
-      if (user?.username) {
-        // If user is found, redirect to their dynamic profile page
-        router.replace(`/app/profile/${user.username}`);
-      }
-      // If no user, we can just show a message or redirect to login.
-      // For now, we'll just show a loading/message state.
-    }
-  }, [user, isInitialized, router]);
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen bg-black">
+        <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-purple-500"></div>
+      </div>
+    );
+  }
 
-  // Display a loading state while we wait for the redirect logic
   return (
-    <div className="h-full flex flex-col items-center justify-center bg-black text-white p-4">
-      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white"></div>
-      <p className="mt-4 text-center">Checking authentication...</p>
-       <p className="mt-2 text-sm text-gray-500">If you are not redirected, please log in.</p>
+    <div className="p-4 text-white">
+      <h1 className="text-2xl font-bold mb-4">Hồ sơ cá nhân</h1>
+      {user ? (
+        <div className="bg-gray-900 p-4 rounded-lg">
+          <p>Chào mừng, <span className="text-purple-400">{user.username}</span></p>
+        </div>
+      ) : (
+        <p className="text-gray-400">Vui lòng đăng nhập qua Pi Browser</p>
+      )}
     </div>
   );
 }
