@@ -1,18 +1,21 @@
 import './globals.css';
-import { PiSDKProvider } from '@/components/PiSDKProvider';
+import PiSDKProvider from '@/components/PiSDKProvider'; // Đảm bảo đường dẫn này khớp với file dưới
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export const metadata = {
+  title: 'Connect Pi Supreme',
+  description: 'Vũ trụ Web3 trên Pi Network',
+};
+
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   return (
     <html lang="vi">
-      <head>
-        {/* Không xóa các meta data cũ của Jules nếu có */}
-      </head>
-      <body className="antialiased bg-black text-white">
+      <body className="bg-black text-white antialiased">
         <PiSDKProvider>
-          {/* AppShell hoặc các thành phần điều hướng cũ của Jules sẽ nằm ở đây */}
-          <main className="min-h-screen">
-            {children}
-          </main>
+          {children}
         </PiSDKProvider>
       </body>
     </html>
