@@ -4,7 +4,7 @@ import "./globals.css";
 import { PiSDKProvider } from "@/components/pi/pi-provider";
 import { LanguageProvider } from "@/components/i18n/language-provider";
 import { Toaster } from "@/components/ui/sonner";
-import Script from "next/script";
+// import BottomNav from "@/components/BottomNav"; // Tạm tắt ở đây để trang con tự gọi
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -15,20 +15,18 @@ export const metadata: Metadata = {
 
 export default function RootLayout({
   children,
-}: {
+}: Readonly<{
   children: React.ReactNode;
-}) {
+}>) {
   return (
-    <html lang="vi">
+    <html lang="en">
       <head>
+        {}
+        <script src="https://sdk.minepi.com/pi-sdk.js" async></script>
+        
         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0" />
       </head>
-      <body className={inter.className} style={{ backgroundColor: "black", margin: 0 }}>
-        {/* Sử dụng Next Script để nạp SDK an toàn hơn */}
-        <Script 
-          src="https://sdk.minepi.com/pi-sdk.js" 
-          strategy="beforeInteractive"
-        />
+      <body className={inter.className} style={{ backgroundColor: "black", margin: 0, padding: 0 }}>
         <LanguageProvider>
           <PiSDKProvider>
             {children}
