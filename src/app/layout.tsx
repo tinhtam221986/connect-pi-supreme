@@ -1,10 +1,30 @@
+"use client";
 import './globals.css';
-import PiSDKProvider from '@/components/PiSDKProvider'; // Đảm bảo đường dẫn này khớp với file dưới
+import React, { useEffect } from 'react';
 
-export const metadata = {
-  title: 'Connect Pi Supreme',
-  description: 'Vũ trụ Web3 trên Pi Network',
-};
+// Khởi tạo Provider trực tiếp trong layout để tránh lỗi thiếu file
+function PiSDKProvider({ children }: { children: React.ReactNode }) {
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const loadPi = () => {
+        if (window.Pi) return;
+        const script = document.createElement('script');
+        script.src = "https://sdk.minepi.com/pi-sdk.js";
+        script.async = true;
+        script.onload = () => {
+          if (window.Pi) {
+            window.Pi.init({ version: "1.5", sandbox: true });
+            console.log("Connect Supreme: Pi SDK Ready!");
+          }
+        };
+        document.head.appendChild(script);
+      };
+      loadPi();
+    }
+  }, []);
+
+  return <>{children}</>;
+}
 
 export default function RootLayout({
   children,
