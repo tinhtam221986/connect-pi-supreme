@@ -15,17 +15,17 @@ export function PiSDKProvider({ children }: { children: React.ReactNode }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Chỉ chạy SDK khi ở phía client
     const initPi = async () => {
+      // Đảm bảo chỉ chạy trong trình duyệt
+      if (typeof window === 'undefined') return;
+
       try {
-        if (typeof window !== 'undefined' && (window as any).Pi) {
-          const Pi = (window as any).Pi;
+        const Pi = (window as any).Pi;
+        if (Pi) {
           Pi.init({ version: "1.5", sandbox: true });
-          
           const auth = await Pi.authenticate(['username', 'payments'], (payment: any) => {
             console.log("Payment in progress", payment);
           });
-          
           setUser(auth.user);
         }
       } catch (error) {
@@ -45,10 +45,10 @@ export function PiSDKProvider({ children }: { children: React.ReactNode }) {
   );
 }
 
+// Hook an toàn không gây sập Build
 export const usePi = () => {
   const context = useContext(PiContext);
-  // Thay vì ném lỗi (throw error), chúng ta trả về giá trị mặc định nếu context chưa sẵn sàng
-  if (context === undefined) {
+  if (!context) {
     return { user: null, authenticated: false, loading: true };
   }
   return context;
