@@ -1,30 +1,9 @@
-"use client";
 import './globals.css';
-import React, { useEffect } from 'react';
 
-// Khởi tạo Provider trực tiếp trong layout để tránh lỗi thiếu file
-function PiSDKProvider({ children }: { children: React.ReactNode }) {
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      const loadPi = () => {
-        if (window.Pi) return;
-        const script = document.createElement('script');
-        script.src = "https://sdk.minepi.com/pi-sdk.js";
-        script.async = true;
-        script.onload = () => {
-          if (window.Pi) {
-            window.Pi.init({ version: "1.5", sandbox: true });
-            console.log("Connect Supreme: Pi SDK Ready!");
-          }
-        };
-        document.head.appendChild(script);
-      };
-      loadPi();
-    }
-  }, []);
-
-  return <>{children}</>;
-}
+export const metadata = {
+  title: 'Connect Pi Supreme',
+  description: 'Hệ sinh thái Web3 Pioneer',
+};
 
 export default function RootLayout({
   children,
@@ -33,10 +12,9 @@ export default function RootLayout({
 }) {
   return (
     <html lang="vi">
-      <body className="bg-black text-white antialiased">
-        <PiSDKProvider>
-          {children}
-        </PiSDKProvider>
+      <body style={{ backgroundColor: 'black', color: 'white', margin: 0 }}>
+        {/* Chúng ta sẽ tạm thời bỏ qua PiSDKProvider bên ngoài để thông cổng 404 trước */}
+        {children}
       </body>
     </html>
   );
