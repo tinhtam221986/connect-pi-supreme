@@ -98,4 +98,4 @@ const HomeMenu = ({ iconSize = 'w-7 h-7' }) => {
     )
 }
 
-export default HorizontalBottomNav;
+export default HorizontalBottomNav;// Activate
