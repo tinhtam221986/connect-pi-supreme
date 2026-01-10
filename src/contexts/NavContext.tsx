@@ -28,3 +28,4 @@ export const useNav = () => {
   if (!context) throw new Error("useNav must be used within NavProvider");
   return context;
 };
+// Activate
