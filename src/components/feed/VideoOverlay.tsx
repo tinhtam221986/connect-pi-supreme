@@ -30,16 +30,16 @@ const VideoOverlay = ({
   return (
     <div className="absolute inset-0 text-white pointer-events-none overflow-hidden select-none bg-transparent z-[50]">
       
-      {/* 1. CỤM TƯƠNG TÁC PHẢI - GIỮ NGUYÊN */}
+      {/* 1. CỤM TƯƠNG TÁC PHẢI (GIỮ NGUYÊN) */}
       <Node x={27.5} y={37.5}><Search size={22} style={iconStyle} strokeWidth={1.5} /></Node>
       <Node x={27.5} y={24}><Heart size={24} style={iconStyle} strokeWidth={2} /><span className="text-[9px] mt-1">{stats.likes || 0}</span></Node>
       <Node x={27.5} y={19}><MessageCircle size={24} style={iconStyle} strokeWidth={2} /><span className="text-[9px] mt-1">{stats.comments || 0}</span></Node>
       <Node x={27.5} y={14}><Share2 size={24} style={iconStyle} strokeWidth={2} /></Node>
       <Node x={27.5} y={9.5}><Bookmark size={24} style={iconStyle} strokeWidth={2} /></Node>
 
-      {/* 2. CỤM THÔNG TIN BÊN TRÁI - HẠ CÁNH XUỐNG SÁT ĐÁY (y=1.5 thay vì y=4.5) */}
+      {/* 2. CỤM THÔNG TIN BÊN TRÁI - HẠ XUỐNG CÁCH ĐĨA XOAY 1/4 (SỬ DỤNG BOTTOM: 54px) */}
       <div className="absolute pointer-events-auto z-40 flex flex-col gap-1" 
-           style={{ left: '1.5%', bottom: '70px', width: '75%' }}>
+           style={{ left: '1.5%', bottom: '54px', width: '75%' }}>
         
         {/* #14 SHOP KHÁCH */}
         <div className="mb-0.5">
@@ -57,7 +57,7 @@ const VideoOverlay = ({
            <p className="font-bold text-[13px] drop-shadow-md tracking-tight">@{uploader.username}</p>
         </div>
         
-        {/* #12 MÔ TẢ VIDEO - CHỮ XEM THÊM MÀU TRẮNG, VIẾT THƯỜNG */}
+        {/* #12 MÔ TẢ VIDEO - CHỮ XEM THÊM TRẮNG THƯỜNG */}
         <div onClick={() => setIsExpanded(!isExpanded)} className="cursor-pointer">
           <p className={`text-[10px] leading-tight drop-shadow-md font-medium bg-black/5 rounded-sm p-0.5 ${isExpanded ? 'max-h-[30vh] overflow-y-auto' : 'line-clamp-1'}`}>
             {isExpanded ? caption : (caption.substring(0, 15) + "...")}
@@ -82,7 +82,7 @@ const VideoOverlay = ({
           )}
         </AnimatePresence>
 
-        {/* #5 MASTER V */}
+        {/* #5 MASTER V MENU */}
         <div className="absolute pointer-events-auto cursor-pointer p-3"
           style={{ ...getPos(27.5, 1.2), transform: 'translate(-50%, 0%)' }}
           onClick={(e) => { e.stopPropagation(); toggleNav(); }}
@@ -90,17 +90,17 @@ const VideoOverlay = ({
           <ChevronDown size={28} className={`transition-transform duration-300 ${isNavVisible ? '' : 'rotate-180'}`} style={iconStyle} />
         </div>
 
-        {/* #11 & #16 CỤM ÂM THANH - DỊCH SÁT LỀ 1.5% */}
+        {/* #11 & #16 CỤM ÂM THANH - SÁT MÉP TRÁI */}
         <div className="absolute left-[1.5%] bottom-[2.5%] flex items-center gap-1 pointer-events-auto">
           <motion.div 
             animate={{ rotate: 360 }} 
             transition={{ repeat: Infinity, duration: 5, ease: "linear" }}
-            className="rounded-full bg-gradient-to-r from-cyan-400 to-blue-500 p-0.5"
+            className="rounded-full bg-gradient-to-r from-cyan-400 to-blue-500 p-0.5 shadow-lg shadow-cyan-500/20"
           >
             <Disc size={24} className="text-white" />
           </motion.div>
           
-          <button onClick={() => setIsMuted(!isMuted)} className="p-0.5">
+          <button onClick={() => setIsMuted(!isMuted)} className="p-0.5 active:scale-125 transition-transform">
             {isMuted ? <VolumeX size={22} className="text-red-500" /> : <Volume2 size={22} className="text-green-400" />}
           </button>
         </div>
