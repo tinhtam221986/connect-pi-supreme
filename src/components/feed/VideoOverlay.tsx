@@ -1,18 +1,20 @@
 'use client';
 import React, { useState } from 'react';
 import Link from 'next/link';
-import { Heart, MessageCircle, Share2, Bookmark, Search, ShoppingCart, Home, PlusSquare, Mail, ChevronDown, Store, Disc, Volume2, VolumeX } from 'lucide-react';
+import { Heart, MessageCircle, Share2, Bookmark, Search, ShoppingCart, Home, PlusSquare, Mail, ChevronDown, Store, Disc, Volume2, VolumeX, Plus } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNav } from '@/contexts/NavContext';
 
 const VideoOverlay = ({ 
-  uploader = { username: 'Unknown User', avatar: '' }, 
+  uploader = { username: 'Unknown User', avatar: '', id: 'me' }, 
   caption = 'Kế hoạch tổng lực: Hoàn thiện mạch máu dữ liệu và giao diện Connect-Pi...', 
   stats = { likes: 0, comments: 0 } 
 }) => {
   const { isNavVisible, toggleNav } = useNav();
   const [isExpanded, setIsExpanded] = useState(false);
   const [isMuted, setIsMuted] = useState(false);
+  const [isFollowed, setIsFollowed] = useState(false);
+  
   const iconStyle = { filter: 'drop-shadow(0px 1px 1px rgba(0, 0, 0, 0.8))' };
 
   const getPos = (gridX: number, gridY: number) => ({
@@ -30,18 +32,18 @@ const VideoOverlay = ({
   return (
     <div className="absolute inset-0 text-white pointer-events-none overflow-hidden select-none bg-transparent z-[50]">
       
-      {/* 1. CỤM TƯƠNG TÁC PHẢI */}
+      {/* 1. CỤM TƯƠNG TÁC PHẢI - ĐÃ ĐÓNG BĂNG */}
       <Node x={27.5} y={37.5}><Search size={22} style={iconStyle} strokeWidth={1.5} /></Node>
       <Node x={27.5} y={24}><Heart size={24} style={iconStyle} strokeWidth={2} /><span className="text-[9px] mt-1">{stats.likes || 0}</span></Node>
       <Node x={27.5} y={19}><MessageCircle size={24} style={iconStyle} strokeWidth={2} /><span className="text-[9px] mt-1">{stats.comments || 0}</span></Node>
       <Node x={27.5} y={14}><Share2 size={24} style={iconStyle} strokeWidth={2} /></Node>
       <Node x={27.5} y={9.5}><Bookmark size={24} style={iconStyle} strokeWidth={2} /></Node>
 
-      {/* 2. CỤM THÔNG TIN BÊN TRÁI - ÉP XUỐNG CÒN 1/3 KHOẢNG CÁCH (BOTTOM: 46px) */}
+      {/* 2. CỤM THÔNG TIN BÊN TRÁI - TỌA ĐỘ 46PX CỐ ĐỊNH */}
       <div className="absolute pointer-events-auto z-40 flex flex-col gap-1" 
            style={{ left: '1.5%', bottom: '46px', width: '75%' }}>
         
-        {/* #14 SHOP KHÁCH */}
+        {/* #14 SHOP KHÁCH - HOẠT ĐỘNG */}
         <div className="mb-0.5">
           <Link href={`/shop/${uploader.username}`} className="inline-flex flex-col items-center p-1 bg-black/40 rounded border border-yellow-500/50 active:scale-95">
             <Store size={14} className="text-yellow-400" />
@@ -49,15 +51,26 @@ const VideoOverlay = ({
           </Link>
         </div>
 
-        {/* #13 AVATAR & NAME */}
-        <div className="flex items-center gap-2">
-           <div className="w-8 h-8 rounded-full border border-white/70 overflow-hidden shadow-lg bg-zinc-800">
-              <img src={uploader.avatar || `https://api.dicebear.com/7.x/avataaars/svg?seed=${uploader.username}`} alt="avt" className="w-full h-full object-cover" />
+        {/* #13 AVATAR & #16 NÚT THEO DÕI ĐỎ */}
+        <div className="flex items-center gap-2 relative">
+           <div className="relative">
+              <div className="w-8 h-8 rounded-full border border-white/70 overflow-hidden shadow-lg bg-zinc-800">
+                <img src={uploader.avatar || `https://api.dicebear.com/7.x/avataaars/svg?seed=${uploader.username}`} alt="avt" className="w-full h-full object-cover" />
+              </div>
+              {/* #16 NÚT THEO DÕI + ĐỎ - BỔ SUNG THEO LỆNH */}
+              {!isFollowed && (
+                <button 
+                  onClick={() => setIsFollowed(true)}
+                  className="absolute -bottom-1 left-1/2 -translate-x-1/2 bg-red-500 rounded-full p-0.5 border border-white active:scale-125 transition-transform"
+                >
+                  <Plus size={10} strokeWidth={4} />
+                </button>
+              )}
            </div>
            <p className="font-bold text-[13px] drop-shadow-md tracking-tight">@{uploader.username}</p>
         </div>
         
-        {/* #12 MÔ TẢ VIDEO - CHỮ XEM THÊM TRẮNG THƯỜNG */}
+        {/* #12 MÔ TẢ VIDEO */}
         <div onClick={() => setIsExpanded(!isExpanded)} className="cursor-pointer">
           <p className={`text-[10px] leading-tight drop-shadow-md font-medium bg-black/5 rounded-sm p-0.5 ${isExpanded ? 'max-h-[30vh] overflow-y-auto' : 'line-clamp-1'}`}>
             {isExpanded ? caption : (caption.substring(0, 15) + "...")}
@@ -68,21 +81,34 @@ const VideoOverlay = ({
         </div>
       </div>
 
-      {/* 3. LỚP HỆ THỐNG CỐ ĐỊNH ĐÁY */}
+      {/* 3. LỚP ĐIỀU HƯỚNG HỆ THỐNG */}
       <div className="fixed inset-x-0 bottom-0 pointer-events-none z-[100]">
         <AnimatePresence>
           {isNavVisible && (
             <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 10 }}>
               <Node x={7.0} y={1.2}><ShoppingCart size={26} style={iconStyle} /></Node>
               <Node x={11.0} y={1.2}><Store size={26} style={iconStyle} /></Node>
-              <Node x={15.0} y={1.2}><PlusSquare size={28} strokeWidth={2} style={iconStyle} /></Node>
-              <Node x={19.0} y={1.2}><Home size={26} style={iconStyle} /></Node>
+              
+              {/* #15 NÚT ĐĂNG VIDEO - ĐÃ THÔNG MẠCH */}
+              <Node x={15.0} y={1.2}>
+                <Link href="/upload" className="active:scale-90 transition-transform pointer-events-auto">
+                  <PlusSquare size={28} strokeWidth={2.5} className="text-red-500" style={{ filter: 'drop-shadow(0px 0px 5px rgba(239, 68, 68, 0.5))' }} />
+                </Link>
+              </Node>
+              
+              {/* #19/7 NÚT HOME - KÍCH HOẠT ĐIỀU HƯỚNG VỀ PROFILE CHỦ TÀI KHOẢN */}
+              <Node x={19.0} y={1.2}>
+                <Link href="/me" className="active:scale-90 transition-transform pointer-events-auto">
+                  <Home size={26} style={iconStyle} />
+                </Link>
+              </Node>
+              
               <Node x={23.0} y={1.2}><Mail size={26} style={iconStyle} /></Node>
             </motion.div>
           )}
         </AnimatePresence>
 
-        {/* #5 MASTER V MENU */}
+        {/* #5 MASTER V - HOẠT ĐỘNG */}
         <div className="absolute pointer-events-auto cursor-pointer p-3"
           style={{ ...getPos(27.5, 1.2), transform: 'translate(-50%, 0%)' }}
           onClick={(e) => { e.stopPropagation(); toggleNav(); }}
@@ -90,16 +116,11 @@ const VideoOverlay = ({
           <ChevronDown size={28} className={`transition-transform duration-300 ${isNavVisible ? '' : 'rotate-180'}`} style={iconStyle} />
         </div>
 
-        {/* #11 & #16 CỤM ÂM THANH - VỊ TRÍ CỐ ĐỊNH */}
+        {/* #11 & #16 ÂM THANH - ĐÓNG BĂNG */}
         <div className="absolute left-[1.5%] bottom-[2.5%] flex items-center gap-1 pointer-events-auto">
-          <motion.div 
-            animate={{ rotate: 360 }} 
-            transition={{ repeat: Infinity, duration: 5, ease: "linear" }}
-            className="rounded-full bg-gradient-to-r from-cyan-400 to-blue-500 p-0.5 shadow-lg shadow-cyan-500/20"
-          >
+          <motion.div animate={{ rotate: 360 }} transition={{ repeat: Infinity, duration: 5, ease: "linear" }} className="rounded-full bg-gradient-to-r from-cyan-400 to-blue-500 p-0.5 shadow-lg shadow-cyan-500/20">
             <Disc size={24} className="text-white" />
           </motion.div>
-          
           <button onClick={() => setIsMuted(!isMuted)} className="p-0.5 active:scale-125 transition-transform">
             {isMuted ? <VolumeX size={22} className="text-red-500" /> : <Volume2 size={22} className="text-green-400" />}
           </button>
@@ -111,4 +132,4 @@ const VideoOverlay = ({
 };
 
 export default VideoOverlay;
-        
+             
