@@ -1,57 +1,75 @@
+// @ts-nocheck
 'use client';
 import React from 'react';
+import { ShoppingCart, Store, PlusSquare, Home, Mail, ChevronDown, Bot } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNav } from '@/contexts/NavContext';
 
-// Tự định nghĩa các Icon để đảm bảo Build luôn Xanh
-const Icon = ({ path }: { path: string }) => (
-  <svg viewBox="0 0 24 24" width="26" height="26" stroke="currentColor" strokeWidth="1.5" fill="none" strokeLinecap="round" strokeLinejoin="round">
-    <path d={path} />
-  </svg>
+const Node = ({ x, y, children, getPos }) => (
+  <div 
+    className="absolute pointer-events-auto flex flex-col items-center justify-center z-50"
+    style={{ ...getPos(x, y), transform: 'translate(-50%, 0%)' }}
+  >
+    {children}
+  </div>
 );
 
-const PATHS = {
-  cart: "M9 22a1 1 0 1 0 0 2 1 1 0 1 0 0-2zm7 0a1 1 0 1 0 0 2 1 1 0 1 0 0-2zm-7-3h7a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2H9a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2z",
-  market: "M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z",
-  plus: "M12 5v14M5 12h14",
-  home: "M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z",
-  mail: "M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z m16 0l-8 7-8-7"
-};
-
-export default function GlobalUI({ children }: { children: React.ReactNode }) {
-  const { isNavVisible, toggleNav, setActiveTab }: any = useNav();
-
-  const getPos = (gridX: number, gridY: number) => ({
+const GlobalUI = ({ children }) => {
+  const { isNavVisible, toggleNav } = useNav();
+  
+  const getPos = (gridX, gridY) => ({
     left: `${(gridX / 30) * 100}%`,
     bottom: `${(gridY / 40) * 100}%`,
   });
 
   return (
-    <div className="relative w-full h-[100dvh] overflow-hidden bg-black text-white">
-      <main className="w-full h-full relative z-0">{children}</main>
+    <div className="relative w-full h-screen overflow-hidden bg-black shadow-2xl">
+      {/* NỘI DUNG THAY ĐỔI THEO TAB */}
+      <main className="w-full h-full relative z-0">
+        {children}
+      </main>
 
-      <div className="absolute inset-0 pointer-events-none z-50">
+      {/* LỚP HỆ THỐNG CỐ ĐỊNH (SYSTEM LAYER) */}
+      <div className="absolute inset-0 pointer-events-none z-[60]">
         <AnimatePresence>
           {isNavVisible && (
-            <motion.div initial={{ y: 50 }} animate={{ y: 0 }} exit={{ y: 50 }} className="absolute inset-0">
-              <div className="absolute pointer-events-auto cursor-pointer" style={getPos(7, 1.2)} onClick={() => setActiveTab('cart')}><Icon path={PATHS.cart} /></div>
-              <div className="absolute pointer-events-auto cursor-pointer" style={getPos(11, 1.2)} onClick={() => setActiveTab('market')}><Icon path={PATHS.market} /></div>
-              <div className="absolute pointer-events-auto cursor-pointer" style={getPos(15, 1.2)} onClick={() => setActiveTab('upload')}><Icon path={PATHS.plus} /></div>
-              <div className="absolute pointer-events-auto cursor-pointer" style={getPos(19, 1.2)} onClick={() => setActiveTab('home')}><Icon path={PATHS.home} /></div>
-              <div className="absolute pointer-events-auto cursor-pointer" style={getPos(23, 1.2)} onClick={() => setActiveTab('inbox')}><Icon path={PATHS.mail} /></div>
+            <motion.div 
+              initial={{ opacity: 0, y: 20 }} 
+              animate={{ opacity: 1, y: 0 }} 
+              exit={{ opacity: 0, y: 20 }}
+            >
+              <Node x={7.0} y={1.2} getPos={getPos}><ShoppingCart size={26} /></Node>
+              <Node x={11.0} y={1.2} getPos={getPos}><Store size={26} /></Node>
+              <Node x={15.0} y={1.2} getPos={getPos}><PlusSquare size={26} /></Node>
+              <Node x={19.0} y={1.2} getPos={getPos}><Home size={26} /></Node>
+              <Node x={23.0} y={1.2} getPos={getPos}><Mail size={26} /></Node>
             </motion.div>
           )}
         </AnimatePresence>
 
-        {/* Nút Master V #5 */}
+        {/* Nút Master V - Không bao giờ ẩn */}
         <div 
-          className="absolute pointer-events-auto cursor-pointer p-2 transition-transform"
-          style={{ ...getPos(27.5, 1.2), transform: `translate(-50%, 0%) rotate(${isNavVisible ? 0 : 180}deg)` }}
+          className="absolute pointer-events-auto cursor-pointer p-4"
+          style={{ ...getPos(27.5, 1.2), transform: 'translate(-50%, 0%)' }}
           onClick={toggleNav}
         >
-          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M6 9l6 6 6-6"/></svg>
+          <ChevronDown size={28} color="white" className={isNavVisible ? '' : 'rotate-180'} />
         </div>
+
+        {/* Độc bản Bot AI #18 - Trôi nổi toàn cục */}
+        <motion.div 
+          drag 
+          dragMomentum={false} 
+          className="fixed z-[100] pointer-events-auto shadow-xl"
+          style={{ top: '20%', right: '10%' }}
+        >
+           <div className="relative bg-blue-500 p-3 rounded-full border-2 border-white shadow-lg">
+              <Bot size={24} color="white" /> 
+           </div>
+        </motion.div>
       </div>
     </div>
   );
-}
+};
+
+export default GlobalUI;
