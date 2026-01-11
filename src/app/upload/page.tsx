@@ -1,7 +1,6 @@
 'use client';
-
 import React from 'react';
-import CreateFlow from '@/components/create/CreateFlow'; // Đã sửa: Không dùng dấu ngoặc nhọn
+import CreateFlow from '@/components/create/CreateFlow';
 
 export default function UploadPage() {
   return (
@@ -10,4 +9,3 @@ export default function UploadPage() {
     </main>
   );
 }
-// Activate
