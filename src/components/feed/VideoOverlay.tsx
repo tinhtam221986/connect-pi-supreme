@@ -1,14 +1,23 @@
 // @ts-nocheck
 'use client';
 import React from 'react';
-import { Heart, MessageCircle, Share2, Bookmark, Search, ShoppingCart, Home, PlusSquare, Mail, ChevronDown, Store, Disc, Bot } from 'lucide-react';
+import { 
+  Heart, MessageCircle, Share2, Bookmark, Search, 
+  ShoppingCart, Home, PlusSquare, Mail, ChevronDown, 
+  Store, Disc, Volume2, Bot 
+} from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNav } from '@/contexts/NavContext';
 
-const VideoOverlay = ({ uploader = { username: '@architect', avatar: '' }, caption = '', stats = { likes: '1.2K', comments: '45' } }) => {
+const VideoOverlay = ({ 
+  uploader = { username: '@architect', avatar: '' }, 
+  caption = '', 
+  stats = { likes: '1.2K', comments: '45' } 
+}) => {
   const { isNavVisible, toggleNav } = useNav();
   const iconStyle = { filter: 'drop-shadow(0px 1px 1px rgba(0, 0, 0, 0.8))' };
 
+  // Hệ tọa độ GridX/GridY đạt chuẩn 99,99% của Phó Giám đốc
   const getPos = (gridX, gridY) => ({
     left: `${(gridX / 30) * 100}%`,
     bottom: `${(gridY / 40) * 100}%`,
@@ -25,14 +34,15 @@ const VideoOverlay = ({ uploader = { username: '@architect', avatar: '' }, capti
 
   return (
     <div className="absolute inset-0 text-white pointer-events-none overflow-hidden select-none">
-      {/* 1. CỤM TƯƠNG TÁC PHẢI */}
+      
+      {/* 1. CỤM TƯƠNG TÁC PHẢI - GIỮ NGUYÊN TỌA ĐỘ BẤT BIẾN */}
       <Node x={27.5} y={37.5}><Search size={22} style={iconStyle} /></Node>
       <Node x={27.5} y={24}><Heart size={24} fill="white" style={iconStyle} /><span className="text-[9px] font-bold">{stats.likes}</span></Node>
       <Node x={27.5} y={19}><MessageCircle size={24} style={iconStyle} /><span className="text-[9px] font-bold">{stats.comments}</span></Node>
       <Node x={27.5} y={14}><Share2 size={24} style={iconStyle} /></Node>
       <Node x={27.5} y={9}><Bookmark size={24} style={iconStyle} /></Node>
 
-      {/* 2. #14 SHOP CÁ NHÂN CHỦ VIDEO */}
+      {/* 2. #14 SHOP CÁ NHÂN CHỦ VIDEO (Mạch máu chuyên sâu) */}
       <Node x={2.5} y={7.5} className="items-start">
         <a href={`/profile/${uploader.username}/shop`} className="flex flex-col items-center p-1 bg-black/20 rounded-md border border-yellow-400/30">
           <Store size={18} className="text-yellow-400" />
@@ -40,16 +50,16 @@ const VideoOverlay = ({ uploader = { username: '@architect', avatar: '' }, capti
         </a>
       </Node>
 
-      {/* 3. #13 AVATAR & #12 CAPTION */}
-      <div className="absolute pointer-events-auto z-40 px-4" style={{ ...getPos(0, 3.5), width: '70%' }}>
+      {/* 3. #13 AVATAR & #12 CAPTION (Hạ xuống y=3.5 chuẩn thiết kế) */}
+      <div className="absolute pointer-events-auto z-40 px-4" style={{ ...getPos(0, 3.5), width: '70%', left: '4%' }}>
         <div className="flex items-center gap-2 mb-1">
-           <img src={uploader.avatar || `https://api.dicebear.com/7.x/avataaars/svg?seed=${uploader.username}`} className="w-8 h-8 rounded-full border border-white/80" />
+           <img src={uploader.avatar || `https://api.dicebear.com/7.x/avataaars/svg?seed=${uploader.username}`} className="w-8 h-8 rounded-full border border-white/80" alt="avatar" />
            <p className="font-bold text-[13px]">{uploader.username}</p>
         </div>
         <p className="text-[10px] opacity-90 bg-black/10 px-1 rounded line-clamp-2">{caption}</p>
       </div>
 
-      {/* 4. THANH ĐIỀU HƯỚNG ĐÁY & MASTER V */}
+      {/* 4. THANH ĐIỀU HƯỚNG ĐÁY & MASTER V (#5) */}
       <AnimatePresence>
         {isNavVisible && (
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 20 }}>
@@ -62,6 +72,7 @@ const VideoOverlay = ({ uploader = { username: '@architect', avatar: '' }, capti
         )}
       </AnimatePresence>
 
+      {/* Nút #5 - Luôn cố định để xổ Menu */}
       <div 
         className="absolute pointer-events-auto cursor-pointer p-4 z-[60]"
         style={{ ...getPos(27.5, 1.2), transform: 'translate(-50%, 0%)' }}
@@ -70,7 +81,7 @@ const VideoOverlay = ({ uploader = { username: '@architect', avatar: '' }, capti
         <ChevronDown size={28} className={isNavVisible ? '' : 'rotate-180'} />
       </div>
 
-      {/* #18 BOT AI */}
+      {/* #18 ĐỘC BẢN BOT AI - TRÔI NỔI TỰ DO (Z-INDEX 100) */}
       <motion.div 
         drag 
         dragMomentum={false}
@@ -84,8 +95,10 @@ const VideoOverlay = ({ uploader = { username: '@architect', avatar: '' }, capti
           </div>
         </div>
       </motion.div>
+
     </div>
   );
 };
 
 export default VideoOverlay;
+        
