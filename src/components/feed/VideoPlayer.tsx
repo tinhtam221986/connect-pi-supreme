@@ -1,40 +1,24 @@
 // @ts-nocheck
 'use client';
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useRef, useEffect } from 'react';
 
-export default function VideoPlayer({ src, isActive }: { src: string; isActive: boolean }) {
-  const videoRef = useRef<HTMLVideoElement>(null);
-  const [isMuted, setIsMuted] = useState(true);
+export default function VideoPlayer({ src, isActive }) {
+  const videoRef = useRef(null);
 
   useEffect(() => {
-    const handleAudioToggle = (e: any) => {
-      if (videoRef.current) {
-        videoRef.current.muted = e.detail;
-        setIsMuted(e.detail);
-      }
-    };
-    window.addEventListener('toggle-video-audio', handleAudioToggle);
+    const handleAudio = (e) => { if (videoRef.current) videoRef.current.muted = e.detail; };
+    window.addEventListener('toggle-video-audio', handleAudio);
     
     if (videoRef.current) {
-      if (isActive) {
-        videoRef.current.play().catch(() => {});
-      } else {
-        videoRef.current.pause();
-      }
+      if (isActive) videoRef.current.play().catch(() => {});
+      else { videoRef.current.pause(); videoRef.current.currentTime = 0; }
     }
-    return () => window.removeEventListener('toggle-video-audio', handleAudioToggle);
+    return () => window.removeEventListener('toggle-video-audio', handleAudio);
   }, [isActive]);
 
   return (
     <div className="w-full h-full bg-black flex items-center justify-center">
-      <video 
-        ref={videoRef}
-        src={src} 
-        className="max-h-full max-w-full object-contain" 
-        loop 
-        playsInline
-        muted={isMuted}
-      />
+      <video ref={videoRef} src={src} className="max-h-full max-w-full object-contain" loop playsInline muted />
     </div>
   );
 }
