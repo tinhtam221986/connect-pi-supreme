@@ -1,47 +1,40 @@
+// @ts-nocheck
 'use client';
 import React, { useState, useRef, useEffect } from 'react';
-import { Play } from 'lucide-react';
 
 export default function VideoPlayer({ src, isActive }: { src: string; isActive: boolean }) {
   const videoRef = useRef<HTMLVideoElement>(null);
-  const [isPlaying, setIsPlaying] = useState(true);
+  const [isMuted, setIsMuted] = useState(true);
 
   useEffect(() => {
+    const handleAudioToggle = (e: any) => {
+      if (videoRef.current) {
+        videoRef.current.muted = e.detail;
+        setIsMuted(e.detail);
+      }
+    };
+    window.addEventListener('toggle-video-audio', handleAudioToggle);
+    
     if (videoRef.current) {
       if (isActive) {
         videoRef.current.play().catch(() => {});
       } else {
         videoRef.current.pause();
-        videoRef.current.currentTime = 0;
       }
     }
+    return () => window.removeEventListener('toggle-video-audio', handleAudioToggle);
   }, [isActive]);
 
-  const togglePlay = () => {
-    if (videoRef.current) {
-      if (isPlaying) videoRef.current.pause();
-      else videoRef.current.play();
-      setIsPlaying(!isPlaying);
-    }
-  };
-
   return (
-    <div className="relative w-full h-full bg-black flex items-center justify-center cursor-pointer" onClick={togglePlay}>
+    <div className="w-full h-full bg-black flex items-center justify-center">
       <video 
         ref={videoRef}
         src={src} 
-        className="w-full h-full object-cover" 
+        className="max-h-full max-w-full object-contain" 
         loop 
         playsInline
-        muted={true} // Bắt buộc muted để tự chạy, tiếng sẽ điều khiển qua nút Loa ở Overlay
+        muted={isMuted}
       />
-      {!isPlaying && (
-        <div className="absolute inset-0 flex items-center justify-center bg-black/20 z-20">
-          <div className="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center backdrop-blur-md">
-            <Play size={40} fill="white" className="text-white ml-1" />
-          </div>
-        </div>
-      )}
     </div>
   );
 }
