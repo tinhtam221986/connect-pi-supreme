@@ -1,35 +1,28 @@
 // @ts-nocheck
 'use client';
-import React, { useState } from 'react';
-import Link from 'next/link';
-import { 
-  Heart, MessageCircle, Share2, Bookmark, Search, 
-  ShoppingCart, Home, PlusSquare, Mail, ChevronDown, 
-  Store, Disc, Volume2, VolumeX, Plus 
-} from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Heart, MessageCircle, Share2, Bookmark, Store, Disc, Volume2, VolumeX } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useNav } from '@/contexts/NavContext';
 
-const VideoOverlay = ({ uploader, caption, stats }) => {
-  const { isNavVisible, toggleNav } = useNav();
+const VideoOverlay = ({ videoData, isActive }) => {
   const [isMuted, setIsMuted] = useState(true);
-  const [liked, setLiked] = useState(false);
+  const [showFullDesc, setShowFullDesc] = useState(false);
+  const desc = videoData?.description || "";
+  const shortDesc = desc.length > 15 ? desc.substring(0, 15) + "..." : desc;
 
-  // Tọa độ vàng 30 điểm của ngài
-  const getPos = (gridX, gridY) => ({
-    left: `${(gridX / 30) * 100}%`,
-    bottom: `${(gridY / 40) * 100}%`,
-  });
-
-  const Node = ({ x, y, children, onClick, className = "" }) => (
-    <div 
-      className={`absolute pointer-events-auto flex flex-col items-center justify-center z-50 cursor-pointer ${className}`}
-      style={{ ...getPos(x, y), transform: 'translate(-50%, 0%)' }}
-      onClick={onClick}
-    >
-      {children}
-    </div>
-  );
+  // Tự động bật tiếng khi lướt (khi video bắt đầu active)
+  useEffect(() => {
+    if (isActive) {
+      // Logic: Nếu video được active, gửi tín hiệu bật âm thanh
+      const timer = setTimeout(() => {
+        setIsMuted(false);
+        window.dispatchEvent(new CustomEvent('toggle-video-audio', { detail: false }));
+      }, 500); // Trễ 0.5s để đảm bảo người dùng đã lướt xong 1/3 video
+      return () => clearTimeout(timer);
+    } else {
+      setShowFullDesc(false); // Tự động thu gọn khi lướt qua video khác
+    }
+  }, [isActive]);
 
   const toggleAudio = (e) => {
     e.stopPropagation();
@@ -41,66 +34,58 @@ const VideoOverlay = ({ uploader, caption, stats }) => {
   return (
     <div className="absolute inset-0 text-white pointer-events-none z-[50]">
       
-      {/* CỤM TƯƠNG TÁC PHẢI (Nút 19, 24, v.v.) */}
-      <Node x={27.5} y={37.5}><Search size={22} /></Node>
-      
-      <Node x={27.5} y={24} onClick={() => setLiked(!liked)}>
-        <Heart size={26} fill={liked ? "#ef4444" : "none"} className={liked ? "text-red-500" : "text-white"} />
-        <span className="text-[10px] font-bold mt-1">{liked ? (parseInt(stats?.likes || 0) + 1) : (stats?.likes || 0)}</span>
-      </Node>
+      {/* CỤM TƯƠNG TÁC PHẢI - Cố định tọa độ vàng */}
+      <div className="absolute right-2 bottom-28 flex flex-col gap-5 items-center pointer-events-auto">
+        <div className="flex flex-col items-center">
+          <Heart size={30} className="drop-shadow-md" />
+          <span className="text-[11px] font-bold mt-1">{videoData?.stats?.likes || 0}</span>
+        </div>
+        <div className="flex flex-col items-center">
+          <MessageCircle size={30} className="drop-shadow-md" />
+          <span className="text-[11px] font-bold mt-1">{videoData?.stats?.comments || 0}</span>
+        </div>
+        <Share2 size={30} />
+        <Bookmark size={30} />
+      </div>
 
-      <Node x={27.5} y={19}><MessageCircle size={26} /><span className="text-[10px] font-bold mt-1">{stats?.comments || 0}</span></Node>
-      <Node x={27.5} y={14}><Share2 size={26} /></Node>
-      <Node x={27.5} y={9.5}><Bookmark size={26} /></Node>
-
-      {/* CỤM THÔNG TIN BÊN TRÁI (Nút 14 - Cửa hàng khách & Avatar) */}
-      <div className="absolute pointer-events-auto z-40 flex flex-col gap-2" style={{ left: '1.5%', bottom: '50px', width: '70%' }}>
-        <div>
-          <Link href={`/profile/${uploader?.username}/shop`} className="inline-flex items-center gap-1.5 px-2 py-1 bg-black/40 rounded border border-yellow-500/50">
-            <Store size={14} className="text-yellow-400" />
-            <span className="text-[9px] font-black text-yellow-400 uppercase">SHOP KHÁCH</span>
-          </Link>
+      {/* THÔNG TIN BÊN TRÁI & NÚT SHOP MỚI */}
+      <div className="absolute left-3 bottom-8 w-[70%] pointer-events-auto flex flex-col gap-3">
+        
+        {/* Nút Shop: Thu gọn 1/3, nâng cao */}
+        <div className="mb-2">
+          <button className="flex flex-col items-center justify-center w-14 h-14 bg-yellow-500/90 rounded-xl border-2 border-white shadow-2xl scale-90 active:scale-75 transition-transform">
+            <Store size={22} className="text-black" />
+            <span className="text-[9px] font-black text-black leading-none mt-1">SHOP</span>
+          </button>
         </div>
 
         <div className="flex items-center gap-2">
-           <Link href={`/profile/${uploader?.username}`}>
-              <div className="w-10 h-10 rounded-full border-2 border-white overflow-hidden shadow-lg bg-zinc-800">
-                <img src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${uploader?.username}`} className="w-full h-full object-cover" />
-              </div>
-           </Link>
-           <p className="font-bold text-sm">@{uploader?.username || 'user'}</p>
+          <div className="w-10 h-10 rounded-full border-2 border-white overflow-hidden shadow-lg">
+            <img src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${videoData?.uploader?.username}`} />
+          </div>
+          <p className="font-bold text-sm">@{videoData?.uploader?.username || 'user'}</p>
         </div>
         
-        <p className="text-[12px] leading-tight line-clamp-2 pr-4">{caption}</p>
-      </div>
-
-      {/* THANH ĐIỀU HƯỚNG DƯỚI (Nút 1-5) */}
-      <div className="fixed inset-x-0 bottom-0 pointer-events-none z-[100]">
-        <AnimatePresence>
-          {isNavVisible && (
-            <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 10 }}>
-              <Node x={7.0} y={1.2}><ShoppingCart size={26} /></Node>
-              <Node x={11.0} y={1.2}><Store size={26} /></Node>
-              <Node x={15.0} y={1.2}><Link href="/upload" className="p-1.5 bg-red-600 rounded-lg"><PlusSquare size={24} /></Link></Node>
-              <Node x={19.0} y={1.2}><Link href="/me"><Home size={26} /></Link></Node>
-              <Node x={23.0} y={1.2}><Mail size={26} /></Node>
-            </motion.div>
-          )}
-        </AnimatePresence>
-
-        {/* NÚT SỐ 5 - XỔ MENU */}
-        <div className="absolute pointer-events-auto p-3" style={{ ...getPos(27.5, 1.2), transform: 'translate(-50%, 0%)' }} onClick={toggleNav}>
-          <ChevronDown size={28} className={`transition-transform ${isNavVisible ? '' : 'rotate-180'}`} />
+        {/* Dòng mô tả 15 ký tự & Bung lên 1/2 màn hình */}
+        <div 
+          onClick={() => setShowFullDesc(!showFullDesc)}
+          className={`bg-black/20 rounded-lg p-1 transition-all duration-300 ${showFullDesc ? 'max-h-[40vh] overflow-y-auto bg-black/60 backdrop-blur-md' : ''}`}
+        >
+          <p className="text-[13px] leading-tight drop-shadow-md">
+            {showFullDesc ? desc : shortDesc}
+            {desc.length > 15 && !showFullDesc && <span className="text-blue-400 ml-1">...xem thêm</span>}
+          </p>
         </div>
 
-        {/* ÂM THANH & ĐĨA QUAY */}
-        <div className="absolute left-[1.5%] bottom-[1.2%] flex items-center gap-3 pointer-events-auto">
-          <motion.div animate={{ rotate: 360 }} transition={{ repeat: Infinity, duration: 5, ease: "linear" }}>
-            <Disc size={22} className="text-zinc-400" />
-          </motion.div>
-          <button onClick={toggleAudio} className="p-1.5 bg-black/20 rounded-full backdrop-blur-sm border border-white/10">
+        {/* Loa & Đĩa quay */}
+        <div className="flex items-center gap-4">
+          <button onClick={toggleAudio} className="p-2 bg-white/10 rounded-full backdrop-blur-md border border-white/20">
             {isMuted ? <VolumeX size={18} className="text-red-500" /> : <Volume2 size={18} className="text-green-400" />}
           </button>
+          <div className="flex items-center gap-2 bg-black/20 px-3 py-1 rounded-full border border-white/5">
+            <Disc size={16} className="animate-spin-slow text-zinc-400" />
+            <span className="text-[10px] text-zinc-300">Âm thanh gốc</span>
+          </div>
         </div>
       </div>
     </div>
