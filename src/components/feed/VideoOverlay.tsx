@@ -30,16 +30,16 @@ const VideoOverlay = ({
   return (
     <div className="absolute inset-0 text-white pointer-events-none overflow-hidden select-none bg-transparent z-[50]">
       
-      {/* 1. CỤM TƯƠNG TÁC PHẢI (GIỮ NGUYÊN) */}
+      {/* 1. CỤM TƯƠNG TÁC PHẢI */}
       <Node x={27.5} y={37.5}><Search size={22} style={iconStyle} strokeWidth={1.5} /></Node>
       <Node x={27.5} y={24}><Heart size={24} style={iconStyle} strokeWidth={2} /><span className="text-[9px] mt-1">{stats.likes || 0}</span></Node>
       <Node x={27.5} y={19}><MessageCircle size={24} style={iconStyle} strokeWidth={2} /><span className="text-[9px] mt-1">{stats.comments || 0}</span></Node>
       <Node x={27.5} y={14}><Share2 size={24} style={iconStyle} strokeWidth={2} /></Node>
       <Node x={27.5} y={9.5}><Bookmark size={24} style={iconStyle} strokeWidth={2} /></Node>
 
-      {/* 2. CỤM THÔNG TIN BÊN TRÁI - HẠ XUỐNG CÁCH ĐĨA XOAY 1/4 (SỬ DỤNG BOTTOM: 54px) */}
+      {/* 2. CỤM THÔNG TIN BÊN TRÁI - ÉP XUỐNG CÒN 1/3 KHOẢNG CÁCH (BOTTOM: 46px) */}
       <div className="absolute pointer-events-auto z-40 flex flex-col gap-1" 
-           style={{ left: '1.5%', bottom: '54px', width: '75%' }}>
+           style={{ left: '1.5%', bottom: '46px', width: '75%' }}>
         
         {/* #14 SHOP KHÁCH */}
         <div className="mb-0.5">
@@ -90,7 +90,7 @@ const VideoOverlay = ({
           <ChevronDown size={28} className={`transition-transform duration-300 ${isNavVisible ? '' : 'rotate-180'}`} style={iconStyle} />
         </div>
 
-        {/* #11 & #16 CỤM ÂM THANH - SÁT MÉP TRÁI */}
+        {/* #11 & #16 CỤM ÂM THANH - VỊ TRÍ CỐ ĐỊNH */}
         <div className="absolute left-[1.5%] bottom-[2.5%] flex items-center gap-1 pointer-events-auto">
           <motion.div 
             animate={{ rotate: 360 }} 
@@ -111,4 +111,4 @@ const VideoOverlay = ({
 };
 
 export default VideoOverlay;
-              
+        
